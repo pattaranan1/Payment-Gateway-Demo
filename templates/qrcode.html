@@ -8,10 +8,17 @@
     <body>
         <h1>This is Qrcode Page</h1>
         <h2>Waiting for Status...</h2>
+        <h1>{{user}}</h1>
         <script>
+            var user = '{{ user }}';
+            var user_code = '{{ user_code }}';
             function checkStatus() {
-                $.get('/check-status'
-                ).done((response) => {
+                $.ajax({
+                    url: "/check-status",
+                    headers: { "user": user , "user_code": user_code},
+                    type: "GET",
+                }).done((response) => {
+                    console.log(response['status']);
                     if (response['status'] === 'success') {                            
                         window.location.href = `${window.location.origin}/next`;
                     }
@@ -21,6 +28,7 @@
             }
             setInterval(() => {
                 checkStatus();
+                console.log(user);
             }, 1000);
         </script>
     </body>
