@@ -12,7 +12,8 @@ def qrcode():
 def check():
     global _check   
     _check += 1
-    if (_check == 10):
+    if (_check >= 10):
+        _check = 0
         return jsonify({'status': 'success'})
     return jsonify({'status': 'fail'})
 
