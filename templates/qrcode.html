@@ -3,6 +3,9 @@
     <header>
         <title>DEMO</title>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+            crossorigin="anonymous"></script>
         <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
     </header>
     <body>
@@ -12,6 +15,16 @@
         <script>
             var user = '{{ user }}';
             var user_code = '{{ user_code }}';
+            var socket = io();
+            socket.on('connect', function () {
+                socket.emit('my event', { current_user: user });
+            });
+            socket.on('status', function (data) {
+                console.log(data);
+                if (data['payment_status']) {
+                    window.location.href = `${window.location.origin}/next`;
+                }
+            });
             function checkStatus() {
                 $.ajax({
                     url: "/check-status",
@@ -20,7 +33,7 @@
                 }).done((response) => {
                     console.log(response['status']);
                     if (response['status'] === 'success') {                            
-                        window.location.href = `${window.location.origin}/next`;
+                        window.location.href = `${window.location.origin}/`;
                     }
                 }).fail((error) =>{
                     console.log(error);
@@ -29,7 +42,7 @@
             setInterval(() => {
                 checkStatus();
                 console.log(user);
-            }, 5000);
+            }, 1000000);
         </script>
     </body>
 </html>

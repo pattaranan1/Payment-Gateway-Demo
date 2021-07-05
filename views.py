@@ -1,6 +1,8 @@
 from flask import Flask, render_template, jsonify, request
 from cryptography.fernet import Fernet
 from datetime import datetime, timedelta
+from flask_socketio import SocketIO, emit
+import time
 
 
 def encrypt(message: bytes, key: bytes) -> bytes:
@@ -11,12 +13,27 @@ def decrypt(token: bytes, key: bytes) -> bytes:
     return Fernet(key).decrypt(token)
 
 
+pending_list = {}
+
+
+def background_thread(user=""):
+    global pending_list
+    while True:
+        try:
+            socketio.emit(
+                'status', {'payment_status': pending_list[user]["status"]})
+        except KeyError:
+            print("data was not ready")
+        time.sleep(3)
+
+
 app = Flask(__name__)
 app.run(debug=True)
+socketio = SocketIO(app)
 
 _check = 0
-
-pending_list = {}
+thread = None
+current_user = None
 
 
 @app.route('/')
@@ -33,8 +50,6 @@ def qrcode():
 def check():
     global _check
     _check += 1
-    print(request.headers['user'], request.headers['user_code'])
-    print(pending_list)
     if request.headers['user'] in pending_list:
         if request.headers['user_code'] == pending_list[request.headers['user']]["user_encode"] and pending_list[request.headers['user']]["time_stamp"] + timedelta(seconds=180) > datetime.now():
             if pending_list[request.headers['user']]["status"]:
@@ -60,3 +75,16 @@ def active_token():
 @app.route('/next')
 def next():
     return render_template('next.html')
+
+
+@socketio.on('connect')
+def connect(data):
+    print("connected")
+
+
+@socketio.on('my event')
+def handle_my_custom_event(json):
+    global thread
+    if thread is None:
+        thread = socketio.start_background_task(
+            target=background_thread, user=json['current_user'])
