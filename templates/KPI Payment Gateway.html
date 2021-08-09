@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" href="/static/bootstrap.min.css">
+<script src="/static/jquery.min.js"></script>
+<script src="/static/popper.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+<script src="/static/payment.js" charset="utf-8"></script>
+<link rel="stylesheet" href="/static/payment.css">
+
+
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KPI Payment Gateway</title>
+</head>
+<body>
+  <div class="container">
+    <div class="mx-auto">
+
+            <h5 class="text-center"> &lt;&lt;&lt; MongoDatahub | DBNameUAT | GBPay_UAT | DevConfig |  &gt;&gt;&gt; </h5>
+
+        <img src="/static/kpi_logo_her.jpg" class="img-fluid mx-auto d-block" alt="Responsive image">
+        <h2 class="text-center mt-2"> ประกันภัยเดินทาง </h2>
+        <h3 class="text-center"> เลขอ้างอิง {{ user }} </h3>
+        <h4 class="text-center"> ยอดรวมที่ชำระ 1.00 บาท</h4>
+        <div class="mt-2">
+            <img src="/static/qr_LO210809102008.png" class="img-fluid mx-auto d-block" alt="Responsive image">
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var user = '{{ user }}';
+    var user_code = '{{ user_code }}';
+    var redirect_target = '{{ redirect_page }}'
+</script>
+</body></html>

@@ -10,22 +10,21 @@
     </header>
     <body>
         <h1>This is Qrcode Page</h1>
-        <h2>Waiting for Status...</h2>
+        <div id="status_text"></div>
         <h1>{{user}}</h1>
+        <button type="button" onclick="checkStatus()" name="check_button">Check status</button>
         <script>
             var user = '{{ user }}';
             var user_code = '{{ user_code }}';
-            var socket = io();
-            socket.on('connect', function () {
-                socket.emit('my event', { current_user: user });
-            });
-            socket.on('status', function (data) {
-                console.log(data);
-                if (data['payment_status']) {
-                    window.location.href = `${window.location.origin}/next`;
-                }
-            });
+            window.onload = function(){
+                document.getElementsByName("check_button")[0].disabled = true;
+                setTimeout(function(){
+                    var element = document.getElementsByName("check_button")[0] ;
+                    element.disabled = false;
+                }, 15000);
+            };
             function checkStatus() {
+                var status = document.getElementById("status_text");
                 $.ajax({
                     url: "/check-status",
                     headers: { "user": user , "user_code": user_code},
@@ -33,16 +32,14 @@
                 }).done((response) => {
                     console.log(response['status']);
                     if (response['status'] === 'success') {                            
-                        window.location.href = `${window.location.origin}/`;
+                        window.location.href = `${window.location.origin}/next`;
+                    } else {
+                        status.innerHTML = "pending";
                     }
                 }).fail((error) =>{
                     console.log(error);
                 });
-            }
-            setInterval(() => {
-                checkStatus();
-                console.log(user);
-            }, 1000000);
+            };
         </script>
     </body>
 </html>
